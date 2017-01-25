@@ -13,10 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
-import com.vikas.dtu.safetyfirst2.R;
-import com.vikas.dtu.safetyfirst2.mData.Post;
-import com.vikas.dtu.safetyfirst2.mDiscussion.PostDetailActivity;
-import com.vikas.dtu.safetyfirst2.mRecycler.PostViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +22,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
+import com.vikas.dtu.safetyfirst2.R;
+import com.vikas.dtu.safetyfirst2.mData.Post;
+import com.vikas.dtu.safetyfirst2.mDiscussion.PostDetailActivity;
+import com.vikas.dtu.safetyfirst2.mRecycler.PostViewHolder;
 
 public abstract class PostListFragment extends Fragment {
 
