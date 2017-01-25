@@ -5,37 +5,37 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.vikas.dtu.safetyfirst2.BaseActivity;
+import com.vikas.dtu.safetyfirst2.CategoryAdapter;
 import com.vikas.dtu.safetyfirst2.NotificationService;
 import com.vikas.dtu.safetyfirst2.R;
 import com.vikas.dtu.safetyfirst2.mSignUp.SignInActivity;
-import com.vikas.dtu.safetyfirst2.mDiscussion.fragment.MyPostsFragment;
-import com.vikas.dtu.safetyfirst2.mDiscussion.fragment.RecentPostsFragment;
-import com.google.firebase.auth.FirebaseAuth;
 
 public class DiscussionActivity extends BaseActivity {
 
     private static final String TAG = "NewsActivity";
 
-    private FragmentPagerAdapter mPagerAdapter;
+    private CategoryAdapter mAdapter;
     private ViewPager mViewPager;
+
+    private final int[] tabIcons =  {
+            R.drawable.discussions,
+            R.drawable.myposts,
+            R.drawable.bookmarks,
+            R.drawable.write_que};
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_discussion);
+        setContentView(R.layout.discussion_view_pager);
 
         // starting notification service
         Intent serviceIntent = new Intent(this,NotificationService.class);
@@ -48,7 +48,7 @@ public class DiscussionActivity extends BaseActivity {
         ab.setDisplayHomeAsUpEnabled(true);
 
         // Create the adapter that will return a fragment for each section
-        mPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
+       /* mPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             private final Fragment[] mFragments = new Fragment[]{
                     new RecentPostsFragment(),
                     new MyPostsFragment(),
@@ -85,7 +85,20 @@ public class DiscussionActivity extends BaseActivity {
             public void onClick(View v) {
                 startActivity(new Intent(DiscussionActivity.this, NewPostActivity.class));
             }
-        });
+        }); */
+         mViewPager = (ViewPager) findViewById(R.id.pager);
+         mAdapter = new CategoryAdapter(DiscussionActivity.this ,getSupportFragmentManager());
+        mViewPager.setAdapter(mAdapter);
+        tabLayout = (TabLayout)findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+        setupTabIcons();
+    }
+
+    private void setupTabIcons() {
+        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
+        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
+        tabLayout.getTabAt(2).setIcon(tabIcons[2]);
+        tabLayout.getTabAt(3).setIcon(tabIcons[3]);
     }
 
     @Override
