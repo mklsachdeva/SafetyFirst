@@ -9,16 +9,21 @@
     android:paddingLeft="1dp"
     android:paddingRight="1dp"
     tools:context="com.vikas.dtu.safetyfirst2.mKnowIt.KnowItMain">
-    <ListView
+
+
+    <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:id="@+id/my_list"
+        android:numColumns="2"
+        android:horizontalSpacing="-30dp"
+        android:verticalSpacing="-2dp"
         android:divider="@null"
         android:fadeScrollbars="false"
         android:scrollbarThumbVertical="@drawable/custom_scrollbar"
-        android:scrollbarSize="3dp" />
+        android:scrollbarSize="3dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
