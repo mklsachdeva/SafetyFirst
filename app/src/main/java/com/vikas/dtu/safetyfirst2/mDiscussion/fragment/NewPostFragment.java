@@ -1,51 +1,13 @@
-package com.vikas.dtu.safetyfirst2.mDiscussion;
+package com.vikas.dtu.safetyfirst2.mDiscussion.fragment;
 
 import android.Manifest;
+import android.app.Activity;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
-import android.text.InputType;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-
-import com.vikas.dtu.safetyfirst2.BaseActivity;
-import com.vikas.dtu.safetyfirst2.R;
-import com.vikas.dtu.safetyfirst2.mData.Post;
-import com.vikas.dtu.safetyfirst2.mData.User;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.UploadTask;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.vikas.dtu.safetyfirst2.model.PostNotify;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -53,14 +15,54 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.media.ExifInterface;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.UploadTask;
+import com.vikas.dtu.safetyfirst2.R;
+import com.vikas.dtu.safetyfirst2.mData.Post;
+import com.vikas.dtu.safetyfirst2.mData.User;
+import com.vikas.dtu.safetyfirst2.model.PostNotify;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.realm.Realm;
 
-public class NewPostActivity extends BaseActivity {
+public class NewPostFragment extends Fragment {
 
     private static final String TAG = "NewPostActivity";
     private static final String REQUIRED = "Required";
@@ -97,34 +99,28 @@ public class NewPostActivity extends BaseActivity {
     private DatabaseReference mDatabase;
     // [END declare_database_ref]
 
+    private View mainView;
     private EditText mTitleField;
     private EditText mBodyField;
     private String mImageUri;
     private ProgressBar mProgressBar;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_post);
-        // Get a support ActionBar corresponding to this toolbar
-        ActionBar ab = getSupportActionBar();
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mainView = inflater.inflate(R.layout.activity_new_post, container, false);
 
-        // Enable the Up round_blue_dark
-        ab.setDisplayHomeAsUpEnabled(true);
-
-
-        // [START initialize_database_ref]
         mDatabase = FirebaseDatabase.getInstance().getReference();
         storage = FirebaseStorage.getInstance();
         // [END initialize_database_ref]
 
-        mTitleField = (EditText) findViewById(R.id.field_title);
-        mBodyField = (EditText) findViewById(R.id.field_body);
-        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        mTitleField = (EditText) mainView.findViewById(R.id.field_title);
+        mBodyField = (EditText) mainView.findViewById(R.id.field_body);
+        mProgressBar = (ProgressBar) mainView.findViewById(R.id.progress_bar);
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
 
-        findViewById(R.id.fab_submit_post).setOnClickListener(new View.OnClickListener() {
+        mainView.findViewById(R.id.fab_submit_post).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 key = mDatabase.child("posts").push().getKey();
@@ -144,14 +140,44 @@ public class NewPostActivity extends BaseActivity {
                 post_notify_ref.child(key).child("num_of_comments").setValue(0);
                 post_notify_ref.child(key).child("num_of_stars").setValue(0);
 
-                
+
                 if (imagePath != null) uploadImage();
                 if (pdfPath != null) uploadPDF();
             }
         });
+
+        mainView.findViewById(R.id.upload_image_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    startAction();
+                } else {
+                    if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                            ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                        startAction();
+                    } else {
+                        if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            Toast.makeText(getContext(), "External Storage and Camera permission is required to read images from device", Toast.LENGTH_SHORT).show();
+                        }
+                        requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                        Manifest.permission.CAMERA},
+                                ASK_MULTIPLE_PERMISSION_REQUEST_CODE);
+                    }
+
+                }
+            }
+        });
+
+        mainView.findViewById(R.id.upload_file_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickPDF();
+            }
+        });
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        client = new GoogleApiClient.Builder(getActivity()).addApi(AppIndex.API).build();
+        return mainView;
     }
 
     private void submitPost() {
@@ -173,7 +199,7 @@ public class NewPostActivity extends BaseActivity {
             return;
         }
 
-        findViewById(R.id.new_post).setVisibility(View.INVISIBLE);  // To make textbox invisible
+        mainView.findViewById(R.id.new_post).setVisibility(View.INVISIBLE);  // To make textbox invisible
         mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
         // [START single_value_read]
@@ -189,7 +215,7 @@ public class NewPostActivity extends BaseActivity {
                         if (user == null) {
                             // User is null, error out
                             Log.e(TAG, "User " + userId + " is unexpectedly null");
-                            Toast.makeText(NewPostActivity.this,
+                            Toast.makeText(getContext(),
                                     "Error: could not fetch user.",
                                     Toast.LENGTH_SHORT).show();
                         } else {
@@ -202,7 +228,7 @@ public class NewPostActivity extends BaseActivity {
                         if (imagePath != null || pdfPath != null)  // Wait for image to upload
                             return;
 
-                        finish();
+                        postDone();
                         // [END_EXCLUDE]
                     }
 
@@ -257,7 +283,7 @@ public class NewPostActivity extends BaseActivity {
 
     private void startAction() {
         final CharSequence[] items = {"Take Photo", "Choose From Gallery", "Cancel"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(NewPostActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Select An Option");
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
@@ -270,7 +296,7 @@ public class NewPostActivity extends BaseActivity {
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
                     startActivityForResult(intent, REQUEST_CAMERA);
                 } else if (items[item].equals("Choose From Gallery")) {
-                //    Toast.makeText(getBaseContext(), "choosing from gallery", Toast.LENGTH_SHORT).show();
+                //    Toast.makeText(getContext(), "choosing from gallery", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(
                             Intent.ACTION_PICK,
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -287,9 +313,9 @@ public class NewPostActivity extends BaseActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
 
             if (requestCode == REQUEST_CAMERA) {
                 String filename;
@@ -298,7 +324,7 @@ public class NewPostActivity extends BaseActivity {
             //    Toast.makeText(this, imagePath, Toast.LENGTH_SHORT).show();
             } else if (requestCode == SELECT_IMAGE) {
                 Uri selectedImageUri = data.getData();
-                Cursor cursor = getContentResolver().query(selectedImageUri, null, null, null, null);
+                Cursor cursor = getContext().getContentResolver().query(selectedImageUri, null, null, null, null);
                 if (cursor == null) {
                     Log.d("response", "NUll");
                     imagePath = selectedImageUri.getPath();
@@ -308,10 +334,10 @@ public class NewPostActivity extends BaseActivity {
                     int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
                     imagePath = cursor.getString(index);
                 }
-                Toast.makeText(this, imagePath, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), imagePath, Toast.LENGTH_SHORT).show();
             } else if (requestCode == SELECT_PDF) {
                 pdfPath = data.getData().getPath();
-                Toast.makeText(this, pdfPath, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), pdfPath, Toast.LENGTH_SHORT).show();
             }
 
 
@@ -438,7 +464,7 @@ public class NewPostActivity extends BaseActivity {
 
     private String getRealPathFromURI(String contentURI) {
         Uri contentUri = Uri.parse(contentURI);
-        Cursor cursor = getContentResolver().query(contentUri, null, null, null, null);
+        Cursor cursor = getContext().getContentResolver().query(contentUri, null, null, null, null);
         if (cursor == null) {
             Log.d("response", "NUll");
             return contentUri.getPath();
@@ -517,21 +543,34 @@ public class NewPostActivity extends BaseActivity {
         client.disconnect();
     }
 
+    private void postDone(){
+        mainView.findViewById(R.id.new_post).setVisibility(View.VISIBLE);  // To make textbox invisible
+        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+        mTitleField.setText("");
+        mBodyField.setText("");
+        imagePath = null;
+        pdfPath = null;
+        attachLink = null;
+        downloadImageURL = null;
+        downloadVideoURL = null;
+        downloadPdfURL = null;
+    }
+
     private void attachLink() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.attach_link);
-        final EditText etInputLink = new EditText(this);
+        final EditText etInputLink = new EditText(getActivity());
         etInputLink.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(etInputLink);
         builder.setPositiveButton("Attach", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (etInputLink.getText().toString().trim().equals("")) {
-                    Toast.makeText(NewPostActivity.this, "Add a link to attach", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Add a link to attach", Toast.LENGTH_SHORT).show();
                 } else {
                     /// this is link that user added. Add this to firebase wherever you want
                     attachLink = etInputLink.getText().toString();
-                    Toast.makeText(NewPostActivity.this, "Link Attached", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Link Attached", Toast.LENGTH_SHORT).show();
                 }
             }
         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -563,7 +602,7 @@ public class NewPostActivity extends BaseActivity {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
-                Toast.makeText(getBaseContext(), "Failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -574,10 +613,10 @@ public class NewPostActivity extends BaseActivity {
 
                 downloadImageURL = String.valueOf(downloadUrl);
                 assert downloadUrl != null;
-                Toast.makeText(getBaseContext(), "Image Uploaded", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Image Uploaded", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.putExtra("DOWNLOAD_URI", downloadUrl);
-                setResult(RESULT_OK, intent);
+                getActivity().setResult(Activity.RESULT_OK, intent);
 
                 Map<String, Object> imageAttach = new HashMap<>();
                 imageAttach.put("/posts/" + key + "/image/", downloadImageURL);
@@ -585,7 +624,7 @@ public class NewPostActivity extends BaseActivity {
 
                 pushNode(IMAGE_ATTACH, downloadImageURL);
 
-                finish();
+                postDone();
 
             }
         });
@@ -599,7 +638,7 @@ public class NewPostActivity extends BaseActivity {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle unsuccessful uploads
-                Toast.makeText(getBaseContext(), "Failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -608,12 +647,12 @@ public class NewPostActivity extends BaseActivity {
 
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 assert downloadUrl != null;
-                Toast.makeText(getBaseContext(), "PDF uploaded", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "PDF uploaded", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.putExtra("DOWNLOAD_URI", downloadUrl);
-                setResult(RESULT_OK, intent);
+                getActivity().setResult(Activity.RESULT_OK, intent);
                 pushNode(FILE_ATTACH, String.valueOf(downloadUrl));
-                finish();
+                postDone();
             }
         });
     }
@@ -632,27 +671,6 @@ public class NewPostActivity extends BaseActivity {
         mAttachmentsReference.child(type).setValue(AttachUrl);
     }
 
-    public void uploadImage(View view) {
-        //  startAction();
-
-        if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            startAction();
-        } else {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                startAction();
-            } else {
-                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    Toast.makeText(this, "External Storage and Camera permission is required to read images from device", Toast.LENGTH_SHORT).show();
-                }
-                requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.CAMERA},
-                        ASK_MULTIPLE_PERMISSION_REQUEST_CODE);
-            }
-
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
         if(requestCode == ASK_MULTIPLE_PERMISSION_REQUEST_CODE){
@@ -660,14 +678,14 @@ public class NewPostActivity extends BaseActivity {
                 startAction();
             }
             else {
-                Toast.makeText(this, "External Storage and Camera permission not granted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "External Storage and Camera permission not granted", Toast.LENGTH_SHORT).show();
             }
         }else{
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
-    public void uploadFile(View view) {
-        pickPDF();
+    public String getUid() {
+        return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 }
