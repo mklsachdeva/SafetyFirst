@@ -23,7 +23,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.vikas.dtu.safetyfirst2.R;
-import com.vikas.dtu.safetyfirst2.mDiscussion.NewPostActivity;
+import com.vikas.dtu.safetyfirst2.mDiscussion.DiscussionActivity;
 
 /**
  * Service to handle uploading files to Firebase Storage.
@@ -143,7 +143,7 @@ public class MyUploadService extends MyBaseTaskService {
      */
     private void showUploadFinishedNotification(@Nullable Uri downloadUrl, @Nullable Uri fileUri) {
         // Make Intent to MainActivity
-        Intent intent = new Intent(this, NewPostActivity.class)
+        Intent intent = new Intent(this, DiscussionActivity.class)
                 .putExtra(EXTRA_DOWNLOAD_URL, downloadUrl)
                 .putExtra(EXTRA_FILE_URI, fileUri)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);

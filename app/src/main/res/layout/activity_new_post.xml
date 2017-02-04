@@ -29,6 +29,7 @@
             android:orientation="horizontal">
 
             <ImageButton
+                android:id="@+id/upload_image_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/md_keylines"
@@ -49,6 +50,7 @@
                 android:visibility="gone" />
 
             <ImageButton
+                android:id="@+id/upload_file_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/md_keylines"
