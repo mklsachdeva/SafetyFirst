@@ -12,7 +12,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import com.vikas.dtu.safetyfirst2.mDiscussion.fragment.BookmarkedFragment;
 import com.vikas.dtu.safetyfirst2.mDiscussion.fragment.MyPostsFragment;
 import com.vikas.dtu.safetyfirst2.mDiscussion.fragment.RecentPostsFragment;
-import com.vikas.dtu.safetyfirst2.mDiscussion.fragment.WriteQue;
+import com.vikas.dtu.safetyfirst2.mDiscussion.fragment.NewPostFragment;
 
 
 public class CategoryAdapter extends FragmentPagerAdapter {
@@ -36,7 +36,7 @@ public class CategoryAdapter extends FragmentPagerAdapter {
         else if (position == 2)
             return new BookmarkedFragment();
         else
-            return new WriteQue();
+            return new NewPostFragment();
     }
 
     @Override
